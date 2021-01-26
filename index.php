@@ -49,31 +49,62 @@ for ($i=1; $i <= $counter ; $i++) {
 		$title = $container_title->find('a',0)->title;
 
 		$result_detail_container = $description_container->find('ul[class=result-details]',0);
-		$detail = [];
-		
+		$detail = [];	
 		foreach ($result_detail_container->find('li') as $key => $value) {
 			if($key === 'null') continue;
 			array_push($detail, $value->find('text',0)->_[4]);
 		}
 
-		$part = $result_detail_container->find('p a',0);
+		//get detail content
+		$detail_html = str_get_html(get_data($base_url.$link->find('a',0)->href));
+		$detail_image = $detail_html->find('div[class=digital-object-reference] img',0)->src;
+		$context_area_content = $detail_html->find('div[class=creatorHistories]',0)
+		->find('div[class=field]',0)
+		->find('div[class=history]',0)
+		->plaintext;
 
+		$context_area_year = trim($detail_html->find('div[class=creatorHistories]',0)
+		->find('div[class=field]',0)
+		->find('div[class=datesOfExistence]',0)
+		->plaintext);
+
+		$scope = trim($detail_html->find('section[id=contentAndStructureArea]',0)
+		->find('div[class=field]',0)
+		->find('div[class=scopeAndContent]',0)
+		->plaintext);
+
+		// var_dump($detail_image);
+		// exit;
+
+
+		$part = $result_detail_container->find('p a',0);
 		if(count($detail) < 3) continue;
 
 		$obj_data = [
 			'link' => $base_url.$link->find('a',0)->href,
-			'image' => $base_url.$image->src,
-			'image_base64' => image_to_base64($base_url.$image->src),
+			'image_thumbnail' => $image->src,
 			'title' => $title,
 			'reference_code' => $detail[0],
 			'level_description' => $detail[1],
 			'date' => $detail[2],
-			'part_of' => $part->title
+			'part_of' => $part->title,
+			'details' => [
+				'image' => $detail_image,
+				'context_area' => [
+					'year' => $context_area_year,
+					'description' => $context_area_content
+				],
+				'content_area' => [
+					'scope' => $scope
+				]	
+			]
 		];
 
 		array_push($results, $obj_data);
 	}
 }
+
+// var_dump($results);
 
 $json_data = json_encode($results);
 
