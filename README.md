@@ -8,14 +8,15 @@ Scraping website [Archive Borobudur](http://arsip.borobudur.id) menggunakan PHP
 ## Result Format Data
 
 	[
-		0 : {
-			'link': ...,
-			'image': ...,
-			'image_base64':...,
-			'title':...,
-			'reference_code':...,
-			'level_description':...,
-			'date':...,
-			'part_of':...
-		}
+	0 : {
+		'link': ...,
+		'image': ...,
+		'image_base64':...,
+		'title':...,
+		'reference_code':...,
+		'level_description':...,
+		'date':...,
+		'part_of':...
+	},
+	...
 	]
