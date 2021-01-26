@@ -31,8 +31,8 @@ $counter = 1;
 $base_url = 'http://arsip.borobudurpedia.id';
 $url = $base_url.'/index.php/informationobject/browse?page='.$counter.'&view=table&onlyMedia=1&topLod=0&sort=alphabetic&sortDir=asc';
 $count_artikel = str_get_html(get_data($url));
-// $counter = (int) $count_artikel->find('div[class=pagination pagination-centered] ul li[class=last] a',0)->title;
-$counter = 1;
+$counter = (int) $count_artikel->find('div[class=pagination pagination-centered] ul li[class=last] a',0)->title;
+// $counter = 1;
 
 for ($i=1; $i <= $counter ; $i++) { 
 	$html = str_get_html(get_data($base_url.'/index.php/informationobject/browse?page='.$i.'&view=table&onlyMedia=1&topLod=0&sort=alphabetic&sortDir=asc'));
@@ -73,9 +73,17 @@ for ($i=1; $i <= $counter ; $i++) {
 		->find('div[class=scopeAndContent]',0)
 		->plaintext);
 
-		// var_dump($detail_image);
-		// exit;
+		//get image name
+		$array_image_name = explode('/', $detail_image);
+		$image_name = '';
 
+		if(count($array_image_name) == 9)
+		{
+			$image_name = $array_image_name[8];
+		}
+
+		// var_dump($array_image_name);
+		// exit;
 
 		$part = $result_detail_container->find('p a',0);
 		if(count($detail) < 3) continue;
@@ -90,6 +98,8 @@ for ($i=1; $i <= $counter ; $i++) {
 			'part_of' => $part->title,
 			'details' => [
 				'image' => $detail_image,
+				'image_name' => $image_name,
+				'image_base64' => image_to_base64($base_url.$detail_image),
 				'context_area' => [
 					'year' => $context_area_year,
 					'description' => $context_area_content
@@ -108,7 +118,7 @@ for ($i=1; $i <= $counter ; $i++) {
 
 $json_data = json_encode($results);
 
-if (file_put_contents("data_sample.json", $json_data))
+if (file_put_contents("data.json", $json_data))
     echo "JSON file created successfully...";
 else 
     echo "Oops! Error creating json file...";

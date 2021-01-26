@@ -18,6 +18,8 @@ Scraping website [Archive Borobudur](http://arsip.borobudur.id) menggunakan PHP
 			'part_of':...,
 			'details': {
 				'image':...,
+				'image_name':...,
+				'image_base64':...,
 				'context_area': {
 					'year':...,
 					'description':...,
