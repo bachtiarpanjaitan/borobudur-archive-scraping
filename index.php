@@ -16,14 +16,23 @@ function get_data($url){
 	return $data;
 }
 
+function image_to_base64($url)
+{
+	$image = file_get_contents($url);
+	if ($image !== false){
+	    return 'data:image/jpg;base64,'.base64_encode($image);
+
+	}
+}
+
 $artikels = [];
 $results = [];
 $counter = 1;
 $base_url = 'http://arsip.borobudurpedia.id';
 $url = $base_url.'/index.php/informationobject/browse?page='.$counter.'&view=table&onlyMedia=1&topLod=0&sort=alphabetic&sortDir=asc';
 $count_artikel = str_get_html(get_data($url));
-$counter = (int) $count_artikel->find('div[class=pagination pagination-centered] ul li[class=last] a',0)->title;
-// $counter = 200;
+// $counter = (int) $count_artikel->find('div[class=pagination pagination-centered] ul li[class=last] a',0)->title;
+$counter = 1;
 
 for ($i=1; $i <= $counter ; $i++) { 
 	$html = str_get_html(get_data($base_url.'/index.php/informationobject/browse?page='.$i.'&view=table&onlyMedia=1&topLod=0&sort=alphabetic&sortDir=asc'));
@@ -54,6 +63,7 @@ for ($i=1; $i <= $counter ; $i++) {
 		$obj_data = [
 			'link' => $base_url.$link->find('a',0)->href,
 			'image' => $base_url.$image->src,
+			'image_base64' => image_to_base64($base_url.$image->src),
 			'title' => $title,
 			'reference_code' => $detail[0],
 			'level_description' => $detail[1],
@@ -67,7 +77,7 @@ for ($i=1; $i <= $counter ; $i++) {
 
 $json_data = json_encode($results);
 
-if (file_put_contents("data.json", $json_data))
+if (file_put_contents("data_sample.json", $json_data))
     echo "JSON file created successfully...";
 else 
     echo "Oops! Error creating json file...";
